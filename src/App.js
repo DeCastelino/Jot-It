@@ -1,10 +1,10 @@
 import { useContext } from "react/lib/Context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import theme from "./ColorSchema";
-import { Context } from "./Context";
+import theme from "./Components/ColorSchema";
+import { Context } from "./Components/Context";
 
-import Home from "./Home";
-import Login from "./Login";
+import Home from "./Components/Home";
+import Login from "./Components/Login";
 
 const App = () => {
     const { user } = useContext(Context);
