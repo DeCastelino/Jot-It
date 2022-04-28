@@ -1,4 +1,4 @@
-import { useContext } from "react/lib/Context";
+import { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import theme from "./Components/ColorSchema";
 import { Context } from "./Components/Context";
