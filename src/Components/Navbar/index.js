@@ -1,29 +1,34 @@
 import { useState } from "react";
-import { styled, useTheme, TextField, InputAdornment } from "@mui/material";
-import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+
+import {
+    IconButton,
+    styled,
+    List,
+    AppBar,
+    Box,
+    Toolbar,
+    Menu,
+    Avatar,
+    Tooltip,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    TextField,
+    InputAdornment,
+} from "@mui/material";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from "@mui/icons-material/Menu";
+import MuiDrawer from "@mui/material/Drawer";
 import SearchIcon from "@mui/icons-material/Search";
 
-import logo from "../../assets/Images/jot-it-long.png";
-import logoShort from "../../assets/Images/jot-it-short.png";
+// Import Logo
+import Logo from "../../assets/Images/logo.png";
 
-const drawerWidth = 240;
+const DRAWER_WIDTH = 240;
 
 const openedMixin = (theme) => ({
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
     transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -43,17 +48,6 @@ const closedMixin = (theme) => ({
     },
 });
 
-const Search = styled(Box)`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    position: relative;
-    border-radius: 10px;
-    margin: 0px 20px;
-    width: 50%;
-    background-color: white;
-`;
-
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -63,28 +57,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(["width", "margin"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}));
-
 const Drawer = styled(MuiDrawer, {
     shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
     flexShrink: 0,
     whiteSpace: "nowrap",
     boxSizing: "border-box",
@@ -98,57 +74,115 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
-const Navbar = () => {
-    const theme = useTheme();
-    const [open, setOpen] = useState(true);
-    const [search, setSearch] = useState("");
+const Search = styled(Box)`
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    border-radius: 10px;
+    margin: 0px 20px;
+    width: 50%;
+    background-color: white;
+`;
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
+const Navbar = ({ children }) => {
+    const [openSideNav, setOpenSideNav] = useState(false);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const [search, setSearch] = useState("");
+    const [open, setOpen] = useState(false);
+
+    const toggleSidenav = (event) => {
+        setOpenSideNav((prev) => !prev);
+    };
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
     };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
+    const handleCloseNavMenu = () => {
+        setOpenSideNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
     };
 
     return (
         <Box sx={{ display: "flex" }}>
-            <AppBar position="fixed" color="transparent" sx={{ boxShadow: 1 }}>
-                <Toolbar>
-                    <img src={logo} height="50" />
+            <AppBar
+                position="fixed"
+                sx={{
+                    paddingX: 2,
+                    background: "white",
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    boxShadow: 1,
+                }}
+            >
+                <Toolbar disableGutters>
                     <IconButton
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
+                        size="large"
+                        onClick={toggleSidenav}
                         sx={{ marginRight: 5 }}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Search>
-                        <TextField
-                            variant="standard"
-                            placeholder="Search..."
-                            sx={{
-                                paddingLeft: 2,
-                                paddingY: 1,
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: "none", md: "flex" },
+                        }}
+                    >
+                        <img src={Logo} alt="logo" width="140" />
+                        <Search>
+                            <TextField
+                                variant="standard"
+                                placeholder="Search..."
+                                sx={{
+                                    paddingLeft: 2,
+                                    paddingY: 1,
+                                }}
+                                fullWidth
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                    disableUnderline: true,
+                                }}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </Search>
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open Profile">
+                            <IconButton onClick={handleOpenUserMenu}>
+                                <Avatar
+                                    alt="Remy Sharp"
+                                    src="/static/images/avatar/2.jpg"
+                                />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: "45px" }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
                             }}
-                            fullWidth
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                                disableUnderline: true,
+                            keepMounted
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
                             }}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </Search>
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        ></Menu>
+                    </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open}>
+            <Drawer variant="permanent" open={openSideNav}>
                 <DrawerHeader />
-                <Divider />
                 <List>
                     {["Inbox", "Starred", "Send email", "Drafts"].map(
                         (text, index) => (
@@ -156,14 +190,16 @@ const Navbar = () => {
                                 key={text}
                                 sx={{
                                     minHeight: 48,
-                                    justifyContent: open ? "initial" : "center",
+                                    justifyContent: openSideNav
+                                        ? "initial"
+                                        : "center",
                                     px: 2.5,
                                 }}
                             >
                                 <ListItemIcon
                                     sx={{
                                         minWidth: 0,
-                                        mr: open ? 3 : "auto",
+                                        mr: openSideNav ? 3 : "auto",
                                         justifyContent: "center",
                                     }}
                                 >
@@ -175,7 +211,7 @@ const Navbar = () => {
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={text}
-                                    sx={{ opacity: open ? 1 : 0 }}
+                                    sx={{ opacity: openSideNav ? 1 : 0 }}
                                 />
                             </ListItemButton>
                         )
@@ -184,42 +220,9 @@ const Navbar = () => {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <Typography paragraph>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Rhoncus dolor purus non enim praesent elementum
-                    facilisis leo vel. Risus at ultrices mi tempus imperdiet.
-                    Semper risus in hendrerit gravida rutrum quisque non tellus.
-                    Convallis convallis tellus id interdum velit laoreet id
-                    donec ultrices. Odio morbi quis commodo odio aenean sed
-                    adipiscing. Amet nisl suscipit adipiscing bibendum est
-                    ultricies integer quis. Cursus euismod quis viverra nibh
-                    cras. Metus vulputate eu scelerisque felis imperdiet proin
-                    fermentum leo. Mauris commodo quis imperdiet massa
-                    tincidunt. Cras tincidunt lobortis feugiat vivamus at augue.
-                    At augue eget arcu dictum varius duis at consectetur lorem.
-                    Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-                    sapien faucibus et molestie ac.
-                </Typography>
-                <Typography paragraph>
-                    Consequat mauris nunc congue nisi vitae suscipit. Fringilla
-                    est ullamcorper eget nulla facilisi etiam dignissim diam.
-                    Pulvinar elementum integer enim neque volutpat ac tincidunt.
-                    Ornare suspendisse sed nisi lacus sed viverra tellus. Purus
-                    sit amet volutpat consequat mauris. Elementum eu facilisis
-                    sed odio morbi. Euismod lacinia at quis risus sed vulputate
-                    odio. Morbi tincidunt ornare massa eget egestas purus
-                    viverra accumsan in. In hendrerit gravida rutrum quisque non
-                    tellus orci ac. Pellentesque nec nam aliquam sem et tortor.
-                    Habitant morbi tristique senectus et. Adipiscing elit duis
-                    tristique sollicitudin nibh sit. Ornare aenean euismod
-                    elementum nisi quis eleifend. Commodo viverra maecenas
-                    accumsan lacus vel facilisis. Nulla posuere sollicitudin
-                    aliquam ultrices sagittis orci a.
-                </Typography>
+                {children}
             </Box>
         </Box>
     );
 };
-
 export default Navbar;

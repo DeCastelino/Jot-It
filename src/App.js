@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import theme from "./Components/ColorSchema";
 import { Context } from "./Components/Context";
 
 import Home from "./Components/Home";
@@ -16,7 +15,10 @@ const App = () => {
                     {!user ? (
                         <Route path="/" element={<Login />} />
                     ) : (
-                        <Route exact path="/" element={<Home />} />
+                        <>
+                            <Route exact path="/" element={<Home />} />
+                            <Route path="/" element={<Home />} />
+                        </>
                     )}
                 </Routes>
             </Router>

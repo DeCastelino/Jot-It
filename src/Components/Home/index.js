@@ -1,10 +1,11 @@
+import HomeLayout from "../../Layouts/homeLayout";
 import Navbar from "../Navbar";
 
 const Home = () => {
     return (
-        <>
-            <Navbar />
-        </>
+        <HomeLayout>
+            <h2>Hello there</h2>
+        </HomeLayout>
     );
 };
 
