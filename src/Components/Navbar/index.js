@@ -15,6 +15,7 @@ import {
     ListItemText,
     TextField,
     InputAdornment,
+    Typography,
 } from "@mui/material";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
@@ -22,10 +23,19 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MuiDrawer from "@mui/material/Drawer";
 import SearchIcon from "@mui/icons-material/Search";
 
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import HomeIcon from "@mui/icons-material/Home";
+import LabelOutlinedIcon from "@mui/icons-material/LabelOutlined";
+import LabelIcon from "@mui/icons-material/Label";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 // Import Logo
 import Logo from "../../assets/Images/logo.png";
 
-const DRAWER_WIDTH = 240;
+const DRAWER_WIDTH = 200;
 
 const openedMixin = (theme) => ({
     width: DRAWER_WIDTH,
@@ -89,17 +99,12 @@ const Navbar = ({ children }) => {
     const [openSideNav, setOpenSideNav] = useState(false);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [search, setSearch] = useState("");
-    const [open, setOpen] = useState(false);
 
-    const toggleSidenav = (event) => {
+    const toggleSidenav = () => {
         setOpenSideNav((prev) => !prev);
     };
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setOpenSideNav(null);
     };
 
     const handleCloseUserMenu = () => {
@@ -111,7 +116,7 @@ const Navbar = ({ children }) => {
             <AppBar
                 position="fixed"
                 sx={{
-                    paddingX: 2,
+                    paddingX: 0.5,
                     background: "white",
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     boxShadow: 1,
@@ -121,18 +126,19 @@ const Navbar = ({ children }) => {
                     <IconButton
                         size="large"
                         onClick={toggleSidenav}
-                        sx={{ marginRight: 5 }}
+                        sx={{ marginRight: "1%" }}
                     >
                         <MenuIcon />
                     </IconButton>
                     <Box
                         sx={{
                             flexGrow: 1,
-                            display: { xs: "none", md: "flex" },
+                            display: "flex",
+                            gap: 5,
                         }}
                     >
-                        <img src={Logo} alt="logo" width="140" />
-                        <Search>
+                        <img src={Logo} alt="logo" width="120" />
+                        <Search sx={{ backgroundColor: "primary.light" }}>
                             <TextField
                                 variant="standard"
                                 placeholder="Search..."
@@ -183,8 +189,54 @@ const Navbar = ({ children }) => {
             </AppBar>
             <Drawer variant="permanent" open={openSideNav}>
                 <DrawerHeader />
-                <List>
-                    {["Inbox", "Starred", "Send email", "Drafts"].map(
+                <List
+                    sx={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <HomeOutlinedIcon sx={{ fontSize: 30 }} />
+                        </ListItemIcon>
+                        {/* <ListItemText
+                            primary="Home"
+                            sx={{
+                                color: "primary.main",
+                                fontWeight: "bold",
+                                fontSize: "40px",
+                            }}
+                        /> */}
+                        <Typography
+                            sx={{
+                                color: "primary.main",
+                                fontWeight: "semiBold",
+                                fontSize: "20px",
+                            }}
+                        >
+                            Home
+                        </Typography>
+                    </ListItemButton>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <LabelOutlinedIcon sx={{ fontSize: 30 }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Labels" />
+                    </ListItemButton>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <ArchiveOutlinedIcon sx={{ fontSize: 30 }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Archive" />
+                    </ListItemButton>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <DeleteOutlinedIcon sx={{ fontSize: 30 }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Trash" />
+                    </ListItemButton>
+
+                    {/* {["Inbox", "Starred", "Send email", "Drafts"].map(
                         (text, index) => (
                             <ListItemButton
                                 key={text}
@@ -215,7 +267,7 @@ const Navbar = ({ children }) => {
                                 />
                             </ListItemButton>
                         )
-                    )}
+                    )} */}
                 </List>
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

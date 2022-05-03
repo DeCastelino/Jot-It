@@ -2,6 +2,10 @@ import { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Context } from "./Components/Context";
 
+import { ThemeProvider } from "@mui/material/styles";
+
+import theme from "./Components/ColorSchema";
+
 import Home from "./Components/Home";
 import Login from "./Components/Login";
 
@@ -9,7 +13,7 @@ const App = () => {
     const { user } = useContext(Context);
 
     return (
-        <div className="App">
+        <ThemeProvider theme={theme}>
             <Router>
                 <Routes>
                     {!user ? (
@@ -22,7 +26,7 @@ const App = () => {
                     )}
                 </Routes>
             </Router>
-        </div>
+        </ThemeProvider>
     );
 };
 
