@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import CardLayout from "../../Layouts/CardLayout";
+import ListLayout from "../../Layouts/ListLayout";
+
 import {
     IconButton,
     styled,
@@ -17,8 +20,6 @@ import {
     InputAdornment,
     Typography,
 } from "@mui/material";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import MuiDrawer from "@mui/material/Drawer";
 import SearchIcon from "@mui/icons-material/Search";
@@ -31,9 +32,12 @@ import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 
 // Import Logo
 import Logo from "../../assets/Images/logo.png";
+import { Link } from "react-router-dom";
 
 const DRAWER_WIDTH = 200;
 
@@ -95,10 +99,11 @@ const Search = styled(Box)`
     background-color: white;
 `;
 
-const Navbar = ({ children }) => {
+const Navbar = ({ children, active }) => {
     const [openSideNav, setOpenSideNav] = useState(false);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [search, setSearch] = useState("");
+    const [isCardView, setIsCardView] = useState(true);
 
     const toggleSidenav = () => {
         setOpenSideNav((prev) => !prev);
@@ -109,6 +114,10 @@ const Navbar = ({ children }) => {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const toggleView = () => {
+        setIsCardView((prev) => !prev);
     };
 
     return (
@@ -160,6 +169,20 @@ const Navbar = ({ children }) => {
                         </Search>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
+                        <IconButton
+                            sx={{ marginRight: 2 }}
+                            onClick={toggleView}
+                        >
+                            {isCardView ? (
+                                <Tooltip title="List View">
+                                    <ViewListRoundedIcon />
+                                </Tooltip>
+                            ) : (
+                                <Tooltip title="Card View">
+                                    <DashboardRoundedIcon />
+                                </Tooltip>
+                            )}
+                        </IconButton>
                         <Tooltip title="Open Profile">
                             <IconButton onClick={handleOpenUserMenu}>
                                 <Avatar
@@ -189,90 +212,110 @@ const Navbar = ({ children }) => {
             </AppBar>
             <Drawer variant="permanent" open={openSideNav}>
                 <DrawerHeader />
-                <List
-                    sx={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <HomeOutlinedIcon sx={{ fontSize: 30 }} />
-                        </ListItemIcon>
-                        {/* <ListItemText
-                            primary="Home"
-                            sx={{
-                                color: "primary.main",
-                                fontWeight: "bold",
-                                fontSize: "40px",
-                            }}
-                        /> */}
-                        <Typography
-                            sx={{
-                                color: "primary.main",
-                                fontWeight: "semiBold",
-                                fontSize: "20px",
-                            }}
-                        >
-                            Home
-                        </Typography>
-                    </ListItemButton>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <LabelOutlinedIcon sx={{ fontSize: 30 }} />
-                        </ListItemIcon>
-                        <ListItemText primary="Labels" />
-                    </ListItemButton>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <ArchiveOutlinedIcon sx={{ fontSize: 30 }} />
-                        </ListItemIcon>
-                        <ListItemText primary="Archive" />
-                    </ListItemButton>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <DeleteOutlinedIcon sx={{ fontSize: 30 }} />
-                        </ListItemIcon>
-                        <ListItemText primary="Trash" />
-                    </ListItemButton>
-
-                    {/* {["Inbox", "Starred", "Send email", "Drafts"].map(
-                        (text, index) => (
-                            <ListItemButton
-                                key={text}
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: openSideNav
-                                        ? "initial"
-                                        : "center",
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
+                <List>
+                    <Link to="/home" style={{ textDecoration: "none" }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                {active == "home" ? (
+                                    <HomeIcon sx={{ fontSize: 30 }} />
+                                ) : (
+                                    <HomeOutlinedIcon sx={{ fontSize: 30 }} />
+                                )}
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography
                                     sx={{
-                                        minWidth: 0,
-                                        mr: openSideNav ? 3 : "auto",
-                                        justifyContent: "center",
+                                        fontSize: 20,
+                                        color: "primary.main",
+                                        fontWeight:
+                                            active == "home" ? 700 : 500,
                                     }}
                                 >
-                                    {index % 2 === 0 ? (
-                                        <InboxIcon />
-                                    ) : (
-                                        <MailIcon />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={text}
-                                    sx={{ opacity: openSideNav ? 1 : 0 }}
-                                />
-                            </ListItemButton>
-                        )
-                    )} */}
+                                    Home
+                                </Typography>
+                            </ListItemText>
+                        </ListItemButton>
+                    </Link>
+                    <Link to="/labels" style={{ textDecoration: "none" }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                {active == "labels" ? (
+                                    <LabelIcon sx={{ fontSize: 30 }} />
+                                ) : (
+                                    <LabelOutlinedIcon sx={{ fontSize: 30 }} />
+                                )}
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography
+                                    sx={{
+                                        fontSize: 20,
+                                        color: "primary.main",
+                                        fontWeight:
+                                            active == "labels" ? 700 : 500,
+                                    }}
+                                >
+                                    Labels
+                                </Typography>
+                            </ListItemText>
+                        </ListItemButton>
+                    </Link>
+                    <Link to="/archive" style={{ textDecoration: "none" }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                {active == "archive" ? (
+                                    <ArchiveIcon sx={{ fontSize: 30 }} />
+                                ) : (
+                                    <ArchiveOutlinedIcon
+                                        sx={{ fontSize: 30 }}
+                                    />
+                                )}
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography
+                                    sx={{
+                                        fontSize: 20,
+                                        color: "primary.main",
+                                        fontWeight:
+                                            active == "archive" ? 700 : 500,
+                                    }}
+                                >
+                                    Archive
+                                </Typography>
+                            </ListItemText>
+                        </ListItemButton>
+                    </Link>
+                    <Link to="/trash" style={{ textDecoration: "none" }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                {active == "trash" ? (
+                                    <DeleteIcon sx={{ fontSize: 30 }} />
+                                ) : (
+                                    <DeleteOutlinedIcon sx={{ fontSize: 30 }} />
+                                )}
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography
+                                    sx={{
+                                        fontSize: 20,
+                                        color: "primary.main",
+                                        fontWeight:
+                                            active == "trash" ? 700 : 500,
+                                    }}
+                                >
+                                    Trash
+                                </Typography>
+                            </ListItemText>
+                        </ListItemButton>
+                    </Link>
                 </List>
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                {children}
+                {isCardView ? (
+                    <CardLayout>{children}</CardLayout>
+                ) : (
+                    <ListLayout>{children}</ListLayout>
+                )}
             </Box>
         </Box>
     );

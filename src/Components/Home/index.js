@@ -2,7 +2,7 @@ import HomeLayout from "../../Layouts/homeLayout";
 
 const Home = () => {
     return (
-        <HomeLayout>
+        <HomeLayout active="home">
             <h2>Hello there</h2>
         </HomeLayout>
     );

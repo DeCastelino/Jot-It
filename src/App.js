@@ -1,5 +1,10 @@
 import { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 import { Context } from "./Components/Context";
 
 import { ThemeProvider } from "@mui/material/styles";
@@ -17,11 +22,19 @@ const App = () => {
             <Router>
                 <Routes>
                     {!user ? (
-                        <Route path="/" element={<Login />} />
+                        <Route
+                            path="/"
+                            element={<Navigate to="/login" replace />}
+                        />
                     ) : (
                         <>
-                            <Route exact path="/" element={<Home />} />
-                            <Route path="/" element={<Home />} />
+                            <Route
+                                exact
+                                path="/"
+                                element={<Navigate to="/home" replace />}
+                            />
+                            <Route path="/home" element={<Home />} />
+                            <Route path="/login" element={<Login />} />
                         </>
                     )}
                 </Routes>
