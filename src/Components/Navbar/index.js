@@ -99,7 +99,7 @@ const Search = styled(Box)`
     background-color: white;
 `;
 
-const Navbar = ({ children, active }) => {
+const Navbar = ({ children, active, notes }) => {
     const [openSideNav, setOpenSideNav] = useState(false);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [search, setSearch] = useState("");
@@ -312,9 +312,9 @@ const Navbar = ({ children, active }) => {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 {isCardView ? (
-                    <CardLayout>{children}</CardLayout>
+                    <CardLayout notes={notes}>{children}</CardLayout>
                 ) : (
-                    <ListLayout>{children}</ListLayout>
+                    <ListLayout notes={notes}>{children}</ListLayout>
                 )}
             </Box>
         </Box>

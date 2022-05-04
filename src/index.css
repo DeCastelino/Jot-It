@@ -14,11 +14,6 @@ code {
         monospace;
 }
 
-.text-medium {
-    font-family: "Space Grotesk", sans-serif;
-    font-weight: 500;
-    color: "primary.main";
-}
-.text-bold {
-    font-weight: 700;
+.card {
+    font-family: "Roboto", sans-serif;
 }

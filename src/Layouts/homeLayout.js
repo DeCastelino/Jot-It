@@ -1,13 +1,22 @@
 import { Box } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../Components/Navbar";
 
+import Notes from "../data.json";
+
 const HomeLayout = ({ children, active }) => {
-    useEffect(() => {}, []);
+    const [notes, setNotes] = useState([]);
+
+    useEffect(() => {
+        // console.log(Notes["notes"]);
+        setNotes(Notes["notes"]);
+    }, []);
 
     return (
         <Box sx={{ margin: 0, padding: 0, overflow: "hidden" }}>
-            <Navbar active={active}>{children}</Navbar>
+            <Navbar active={active} notes={notes}>
+                {children}
+            </Navbar>
         </Box>
     );
 };
