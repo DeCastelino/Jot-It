@@ -1,92 +1,54 @@
-import { useState } from "react";
+// React Components
+import { cloneElement, useState, useContext } from "react";
+import { NavLink } from "react-router-dom";
 
+// Custom Components
+import { Context } from "../Context";
 import CardLayout from "../../Layouts/CardLayout";
 import ListLayout from "../../Layouts/ListLayout";
 
+// MUI Components
 import {
-    IconButton,
-    styled,
-    List,
     AppBar,
-    Box,
     Toolbar,
-    Menu,
+    Box,
+    Typography,
+    useScrollTrigger,
+    Divider,
+    Button,
+    IconButton,
     Avatar,
     Tooltip,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
+    Menu,
+    styled,
     TextField,
     InputAdornment,
-    Typography,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import MuiDrawer from "@mui/material/Drawer";
-import SearchIcon from "@mui/icons-material/Search";
+import PropTypes from "prop-types";
 
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+// MUI Icons Components
+import ArchiveIcon from "@mui/icons-material/Archive";
 import HomeIcon from "@mui/icons-material/Home";
 import LabelOutlinedIcon from "@mui/icons-material/LabelOutlined";
-import LabelIcon from "@mui/icons-material/Label";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
-import ArchiveIcon from "@mui/icons-material/Archive";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import SearchIcon from "@mui/icons-material/Search";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 
-// Import Logo
-import Logo from "../../assets/Images/logo.png";
-import { Link } from "react-router-dom";
+import logo from "../../assets/Images/logo.png";
 
-const DRAWER_WIDTH = 200;
-
-const openedMixin = (theme) => ({
-    width: DRAWER_WIDTH,
-    transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: "hidden",
-});
-
-const closedMixin = (theme) => ({
-    transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: "hidden",
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up("sm")]: {
-        width: `calc(${theme.spacing(8)} + 1px)`,
-    },
-});
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-}));
-
-const Drawer = styled(MuiDrawer, {
-    shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-    width: DRAWER_WIDTH,
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-    boxSizing: "border-box",
-    ...(open && {
-        ...openedMixin(theme),
-        "& .MuiDrawer-paper": openedMixin(theme),
-    }),
-    ...(!open && {
-        ...closedMixin(theme),
-        "& .MuiDrawer-paper": closedMixin(theme),
-    }),
-}));
+const AccountButton = styled(Button)`
+    padding: 0px 10px;
+    border-color: lightgray;
+    color: gray;
+    &:hover {
+        background-color: offwhite;
+        border-color: lightgray;
+    }
+`;
 
 const Search = styled(Box)`
     display: flex;
@@ -94,20 +56,55 @@ const Search = styled(Box)`
     align-items: center;
     position: relative;
     border-radius: 10px;
-    margin: 0px 20px;
-    width: 50%;
-    background-color: white;
+    margin: 5px 0px;
+    width: 30%;
 `;
 
-const Navbar = ({ children, active, notes }) => {
-    const [openSideNav, setOpenSideNav] = useState(false);
+const MenuBox = styled("div")`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #e8eae7;
+    margin: -8px 0px;
+    padding: 2ch 6ch;
+`;
+
+function ElevationScroll(props) {
+    const { children, window } = props;
+    const elevationScrollTrigger = useScrollTrigger({
+        disableHysteresis: true,
+        threshold: 0,
+        target: window ? window() : undefined,
+    });
+
+    return cloneElement(children, {
+        elevation: elevationScrollTrigger ? 4 : 0,
+    });
+}
+
+ElevationScroll.propTypes = {
+    children: PropTypes.element.isRequired,
+    window: PropTypes.func,
+};
+
+const Navbar = (props) => {
+    const { user, setUser } = useContext(Context);
     const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorElLabel, setAnchorElLabel] = useState(null);
+    const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [isCardView, setIsCardView] = useState(true);
 
-    const toggleSidenav = () => {
-        setOpenSideNav((prev) => !prev);
+    const handleLogout = () => {
+        setUser(null);
+        window.location.href = "/login";
     };
+
+    const toggleSettings = () => {
+        setOpen(!open);
+    };
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -116,44 +113,47 @@ const Navbar = ({ children, active, notes }) => {
         setAnchorElUser(null);
     };
 
+    const handleOpenLabelMenu = (event) => {
+        setAnchorElLabel(event.currentTarget);
+    };
+
     const toggleView = () => {
-        setIsCardView((prev) => !prev);
+        setIsCardView(!isCardView);
     };
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <AppBar
-                position="fixed"
-                sx={{
-                    paddingX: 0.5,
-                    background: "white",
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                    boxShadow: 1,
-                }}
-            >
-                <Toolbar disableGutters>
-                    <IconButton
-                        size="large"
-                        onClick={toggleSidenav}
-                        sx={{ marginRight: "1%" }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Box
+        <>
+            <ElevationScroll {...props}>
+                <AppBar
+                    position="sticky"
+                    sx={{
+                        position: "relative",
+                        backgroundColor: `rgba(255, 255, 255, 0.8)`,
+                        marginBottom: "1.5em",
+                    }}
+                >
+                    <Toolbar
+                        variant="dense"
                         sx={{
-                            flexGrow: 1,
                             display: "flex",
-                            gap: 5,
+                            alignItems: "center",
                         }}
                     >
-                        <img src={Logo} alt="logo" width="120" />
-                        <Search sx={{ backgroundColor: "primary.light" }}>
+                        <NavLink to="/" style={{ textDecoration: "none" }}>
+                            <img src={logo} alt="logo" height="40em" />
+                        </NavLink>
+                        <Search
+                            sx={{
+                                marginLeft: 10,
+                                backgroundColor: "primary.light",
+                            }}
+                        >
                             <TextField
                                 variant="standard"
                                 placeholder="Search..."
                                 sx={{
                                     paddingLeft: 2,
-                                    paddingY: 1,
+                                    paddingY: 0.75,
                                 }}
                                 fullWidth
                                 InputProps={{
@@ -167,32 +167,146 @@ const Navbar = ({ children, active, notes }) => {
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </Search>
-                    </Box>
-                    <Box sx={{ flexGrow: 0 }}>
-                        <IconButton
-                            sx={{ marginRight: 2 }}
-                            onClick={toggleView}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                position: "absolute",
+                                right: "1em",
+                            }}
                         >
-                            {isCardView ? (
-                                <Tooltip title="List View">
-                                    <ViewListRoundedIcon />
-                                </Tooltip>
-                            ) : (
-                                <Tooltip title="Card View">
-                                    <DashboardRoundedIcon />
-                                </Tooltip>
-                            )}
-                        </IconButton>
-                        <Tooltip title="Open Profile">
-                            <IconButton onClick={handleOpenUserMenu}>
-                                <Avatar
-                                    alt="Remy Sharp"
-                                    src="/static/images/avatar/2.jpg"
-                                />
+                            <Tooltip title="Home">
+                                <NavLink
+                                    to="/home"
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "black",
+                                    }}
+                                >
+                                    <IconButton sx={{ marginRight: 2 }}>
+                                        {props.active === "home" ? (
+                                            <HomeIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        ) : (
+                                            <HomeOutlinedIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        )}
+                                    </IconButton>
+                                </NavLink>
+                            </Tooltip>
+                            <Tooltip title="Archive">
+                                <NavLink
+                                    to="/archive"
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "black",
+                                    }}
+                                >
+                                    <IconButton sx={{ marginRight: 2 }}>
+                                        {props.active === "archive" ? (
+                                            <ArchiveIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        ) : (
+                                            <ArchiveOutlinedIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        )}
+                                    </IconButton>
+                                </NavLink>
+                            </Tooltip>
+                            <Tooltip title="Label">
+                                <IconButton sx={{ marginRight: 2 }}>
+                                    <LabelOutlinedIcon
+                                        sx={{
+                                            cursor: "pointer",
+                                            fontSize: 30,
+                                        }}
+                                        onClick={handleOpenLabelMenu}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Trash">
+                                <NavLink
+                                    to="/trash"
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "black",
+                                    }}
+                                >
+                                    <IconButton sx={{ marginRight: 2 }}>
+                                        {props.active === "trash" ? (
+                                            <DeleteIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        ) : (
+                                            <DeleteOutlineIcon
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    fontSize: 30,
+                                                }}
+                                            />
+                                        )}
+                                    </IconButton>
+                                </NavLink>
+                            </Tooltip>
+                            <Divider
+                                orientation="vertical"
+                                variant="middle"
+                                flexItem
+                            />
+                            <IconButton
+                                sx={{ marginX: 2 }}
+                                onClick={toggleView}
+                            >
+                                {isCardView ? (
+                                    <Tooltip title="List View">
+                                        <ViewListRoundedIcon
+                                            sx={{ fontSize: 30 }}
+                                        />
+                                    </Tooltip>
+                                ) : (
+                                    <Tooltip title="Card View">
+                                        <DashboardRoundedIcon
+                                            sx={{ fontSize: 30 }}
+                                        />
+                                    </Tooltip>
+                                )}
                             </IconButton>
-                        </Tooltip>
+                            <Tooltip title="Open Profile">
+                                <IconButton
+                                    onClick={handleOpenUserMenu}
+                                    sx={{ p: 0 }}
+                                >
+                                    <Avatar
+                                        src={user.profilePicture}
+                                        sx={{ width: 40, height: 40 }}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                         <Menu
-                            sx={{ mt: "45px" }}
+                            sx={{
+                                mt: "45px",
+                                padding: 0,
+                            }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -206,118 +320,58 @@ const Navbar = ({ children, active, notes }) => {
                             }}
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
-                        ></Menu>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <Drawer variant="permanent" open={openSideNav}>
-                <DrawerHeader />
-                <List>
-                    <Link to="/home" style={{ textDecoration: "none" }}>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {active == "home" ? (
-                                    <HomeIcon sx={{ fontSize: 30 }} />
-                                ) : (
-                                    <HomeOutlinedIcon sx={{ fontSize: 30 }} />
-                                )}
-                            </ListItemIcon>
-                            <ListItemText>
-                                <Typography
+                        >
+                            <MenuBox>
+                                <Avatar
+                                    src={user.profilePicture}
                                     sx={{
-                                        fontSize: 20,
-                                        color: "primary.main",
-                                        fontWeight:
-                                            active == "home" ? 700 : 500,
+                                        width: 100,
+                                        height: 100,
+                                        alignContent: "center",
                                     }}
-                                >
-                                    Home
-                                </Typography>
-                            </ListItemText>
-                        </ListItemButton>
-                    </Link>
-                    <Link to="/labels" style={{ textDecoration: "none" }}>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {active == "labels" ? (
-                                    <LabelIcon sx={{ fontSize: 30 }} />
-                                ) : (
-                                    <LabelOutlinedIcon sx={{ fontSize: 30 }} />
-                                )}
-                            </ListItemIcon>
-                            <ListItemText>
+                                />
                                 <Typography
-                                    sx={{
-                                        fontSize: 20,
-                                        color: "primary.main",
-                                        fontWeight:
-                                            active == "labels" ? 700 : 500,
-                                    }}
+                                    variant="subtitle1"
+                                    color="gray"
+                                    align="center"
+                                    paddingTop={1}
                                 >
-                                    Labels
+                                    {user.email}
                                 </Typography>
-                            </ListItemText>
-                        </ListItemButton>
-                    </Link>
-                    <Link to="/archive" style={{ textDecoration: "none" }}>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {active == "archive" ? (
-                                    <ArchiveIcon sx={{ fontSize: 30 }} />
-                                ) : (
-                                    <ArchiveOutlinedIcon
-                                        sx={{ fontSize: 30 }}
-                                    />
-                                )}
-                            </ListItemIcon>
-                            <ListItemText>
-                                <Typography
+                                <AccountButton
+                                    variant="outlined"
                                     sx={{
-                                        fontSize: 20,
-                                        color: "primary.main",
-                                        fontWeight:
-                                            active == "archive" ? 700 : 500,
+                                        borderRadius: 20,
+                                        marginY: 3,
+                                        paddingX: 3,
                                     }}
+                                    onClick={toggleSettings}
                                 >
-                                    Archive
-                                </Typography>
-                            </ListItemText>
-                        </ListItemButton>
-                    </Link>
-                    <Link to="/trash" style={{ textDecoration: "none" }}>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {active == "trash" ? (
-                                    <DeleteIcon sx={{ fontSize: 30 }} />
-                                ) : (
-                                    <DeleteOutlinedIcon sx={{ fontSize: 30 }} />
-                                )}
-                            </ListItemIcon>
-                            <ListItemText>
-                                <Typography
+                                    Manage your account
+                                </AccountButton>
+                                <AccountButton
+                                    variant="outlined"
                                     sx={{
-                                        fontSize: 20,
-                                        color: "primary.main",
-                                        fontWeight:
-                                            active == "trash" ? 700 : 500,
+                                        marginBottom: 1,
+                                        paddingY: 1,
+                                        paddingX: 3,
                                     }}
+                                    onClick={handleLogout}
                                 >
-                                    Trash
-                                </Typography>
-                            </ListItemText>
-                        </ListItemButton>
-                    </Link>
-                </List>
-            </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <DrawerHeader />
-                {isCardView ? (
-                    <CardLayout notes={notes}>{children}</CardLayout>
-                ) : (
-                    <ListLayout notes={notes}>{children}</ListLayout>
-                )}
-            </Box>
-        </Box>
+                                    Logout
+                                </AccountButton>
+                            </MenuBox>
+                        </Menu>
+                    </Toolbar>
+                    <Divider />
+                </AppBar>
+            </ElevationScroll>
+            {isCardView ? (
+                <CardLayout notes={props.notes}>{props.children}</CardLayout>
+            ) : (
+                <ListLayout notes={props.notes}>{props.children}</ListLayout>
+            )}
+        </>
     );
 };
 export default Navbar;
